@@ -22,6 +22,6 @@ public class JobApplication
     [MaxLength(256)]
     public string? Notes { get; set; }
 
-    public string UserId { get; set; } = default!;
-    public virtual ApplicationUser? User { get; set; }
+    public Guid UserId { get; set; }
+    public virtual User? User { get; set; }
 }

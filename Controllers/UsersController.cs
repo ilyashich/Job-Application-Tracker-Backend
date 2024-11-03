@@ -1,6 +1,9 @@
 using System.Security.Claims;
+using JobApplicationTracker.Data;
+using JobApplicationTracker.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
+using Microsoft.EntityFrameworkCore;
 
 namespace JobApplicationTracker.Controllers;
 
@@ -8,11 +11,20 @@ namespace JobApplicationTracker.Controllers;
 [ApiController]
 public class UsersController : ControllerBase
 {
+    JobAppTrackerContext _context;
+
+    public UsersController(JobAppTrackerContext context)
+    {
+        _context = context;
+    }
+
     [HttpGet]
     [Authorize]
-    public ActionResult Greetings(ClaimsPrincipal user)
+    public async Task<ActionResult<User>> Greetings()
     {
-        return Ok($"Hello, {user.Identity!.Name}");
+        var userName = User.Identity!.Name;
+        var user = await _context.Users.SingleOrDefaultAsync(user => user.UserName == userName);
+        return Ok(user);
     }
 }
 

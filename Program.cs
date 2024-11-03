@@ -15,16 +15,16 @@ builder.Services.AddDbContext<JobAppTrackerContext>(options =>
     options.UseMySQL(connectionString!)
 );
 
-builder.Services.AddIdentityCore<ApplicationUser>()
+builder.Services.AddIdentityCore<User>()
     .AddEntityFrameworkStores<JobAppTrackerContext>()
     .AddApiEndpoints();
 
 builder.Services.AddAuthentication().AddBearerToken(IdentityConstants.BearerScheme);
-builder.Services.AddAuthorization();
+builder.Services.AddAuthorizationBuilder();
 
 var app = builder.Build();
 
-app.MapIdentityApi<ApplicationUser>();
+app.MapIdentityApi<User>();
 
 app.UseAuthentication();
 app.UseAuthorization();

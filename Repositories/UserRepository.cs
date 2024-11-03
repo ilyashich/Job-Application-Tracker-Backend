@@ -13,33 +13,33 @@ public class UserRepository : IUserRepository
         _db = db;
     }
 
-    public async Task<IEnumerable<ApplicationUser>> GetUsers()
+    public async Task<IEnumerable<User>> GetUsers()
     {
         return await _db.Users.ToListAsync();
     }
 
-    public async Task<ApplicationUser?> GetUserById(Guid userId)
+    public async Task<User?> GetUserById(Guid userId)
     {
         return await _db.Users.FindAsync(userId);
     }
 
-    public async Task<ApplicationUser?> GetUserByUsername(string username)
+    public async Task<User?> GetUserByUsername(string username)
     {
         return await _db.Users.SingleOrDefaultAsync(user => user.UserName == username);  
     }
 
-    public async Task<ApplicationUser> AddUser(ApplicationUser applicationUser)
+    public async Task<User> AddUser(User user)
     {
-        await _db.Users.AddAsync(applicationUser);
+        await _db.Users.AddAsync(user);
         await _db.SaveChangesAsync();
-        return applicationUser;
+        return user;
     }
 
-    public async Task<ApplicationUser> UpdateUser(ApplicationUser applicationUser)
+    public async Task<User> UpdateUser(User user)
     {
-        _db.Users.Update(applicationUser);
+        _db.Users.Update(user);
         await _db.SaveChangesAsync();
-        return applicationUser;
+        return user;
     }
 
     public async Task<bool> UserExists(Guid userId)
