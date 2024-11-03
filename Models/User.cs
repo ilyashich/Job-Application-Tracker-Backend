@@ -3,7 +3,7 @@ using Microsoft.AspNetCore.Identity;
 
 namespace JobApplicationTracker.Models;
 
-public class User : IdentityUser
+public class User
 {
     [Key]
     public Guid UserId { get; set; } = Guid.NewGuid();
