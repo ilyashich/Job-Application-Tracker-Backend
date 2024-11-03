@@ -1,23 +1,32 @@
 using JobApplicationTracker.Data;
+using JobApplicationTracker.Models;
+using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
 
 var builder = WebApplication.CreateBuilder(args);
 
-// Add services to the container.
+
 
 builder.Services.AddControllers();
 
 var connectionString = builder.Configuration.GetConnectionString("JobApplicationTrackerConnection");
-builder.Services.AddDbContext<JobApplicationTrackerContext>(options =>
+
+builder.Services.AddDbContext<JobAppTrackerContext>(options =>
     options.UseMySQL(connectionString!)
 );
 
+builder.Services.AddIdentityCore<ApplicationUser>()
+    .AddEntityFrameworkStores<JobAppTrackerContext>()
+    .AddApiEndpoints();
+
+builder.Services.AddAuthentication().AddBearerToken(IdentityConstants.BearerScheme);
+builder.Services.AddAuthorization();
+
 var app = builder.Build();
 
-// Configure the HTTP request pipeline.
+app.MapIdentityApi<ApplicationUser>();
 
-app.UseHttpsRedirection();
-
+app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();

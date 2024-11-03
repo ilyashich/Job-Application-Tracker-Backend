@@ -21,7 +21,7 @@ public class JobApplication
     public string JobPostingUrl { get; set; } = default!;
     [MaxLength(256)]
     public string? Notes { get; set; }
-    
-    public Guid UserId { get; set; }
-    public virtual User? User { get; set; }
+
+    public string UserId { get; set; } = default!;
+    public virtual ApplicationUser? User { get; set; }
 }

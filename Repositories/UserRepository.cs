@@ -6,44 +6,44 @@ namespace JobApplicationTracker.Repositories;
 
 public class UserRepository : IUserRepository
 {
-    private readonly JobApplicationTrackerContext _db;
+    private readonly JobAppTrackerContext _db;
 
-    public UserRepository(JobApplicationTrackerContext db)
+    public UserRepository(JobAppTrackerContext db)
     {
         _db = db;
     }
 
-    public async Task<IEnumerable<User>> GetUsers()
+    public async Task<IEnumerable<ApplicationUser>> GetUsers()
     {
         return await _db.Users.ToListAsync();
     }
 
-    public async Task<User?> GetUserById(Guid userId)
+    public async Task<ApplicationUser?> GetUserById(Guid userId)
     {
         return await _db.Users.FindAsync(userId);
     }
 
-    public async Task<User?> GetUserByUsername(string username)
+    public async Task<ApplicationUser?> GetUserByUsername(string username)
     {
-        return await _db.Users.SingleOrDefaultAsync(user => user.Username == username);  
+        return await _db.Users.SingleOrDefaultAsync(user => user.UserName == username);  
     }
 
-    public async Task<User> AddUser(User user)
+    public async Task<ApplicationUser> AddUser(ApplicationUser applicationUser)
     {
-        await _db.Users.AddAsync(user);
+        await _db.Users.AddAsync(applicationUser);
         await _db.SaveChangesAsync();
-        return user;
+        return applicationUser;
     }
 
-    public async Task<User> UpdateUser(User user)
+    public async Task<ApplicationUser> UpdateUser(ApplicationUser applicationUser)
     {
-        _db.Users.Update(user);
+        _db.Users.Update(applicationUser);
         await _db.SaveChangesAsync();
-        return user;
+        return applicationUser;
     }
 
     public async Task<bool> UserExists(Guid userId)
     {
-        return await _db.Users.AnyAsync(user => user.UserId == userId);
+        return await _db.Users.AnyAsync(user => user.Id == userId);
     }
 }
