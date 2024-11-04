@@ -1,4 +1,5 @@
 using JobApplicationTracker.Data;
+using JobApplicationTracker.Extensions;
 using JobApplicationTracker.Models;
 using Microsoft.AspNetCore.Identity;
 using Microsoft.EntityFrameworkCore;
@@ -24,11 +25,14 @@ builder.Services.AddAuthorizationBuilder();
 
 var app = builder.Build();
 
-app.MapIdentityApi<User>();
+app.MapGroup("/api")
+    .MapCustomIdentityApi<User>();
 
 app.UseAuthentication();
 app.UseAuthorization();
 
 app.MapControllers();
+
+app.UseHttpsRedirection();
 
 app.Run();
