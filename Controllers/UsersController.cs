@@ -11,9 +11,9 @@ namespace JobApplicationTracker.Controllers;
 [ApiController]
 public class UsersController : ControllerBase
 {
-    JobAppTrackerContext _context;
+    JobApplicationContext _context;
 
-    public UsersController(JobAppTrackerContext context)
+    public UsersController(JobApplicationContext context)
     {
         _context = context;
     }

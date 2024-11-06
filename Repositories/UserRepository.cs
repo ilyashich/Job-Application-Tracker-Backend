@@ -6,44 +6,31 @@ namespace JobApplicationTracker.Repositories;
 
 public class UserRepository : IUserRepository
 {
-    private readonly JobAppTrackerContext _db;
+    private readonly JobApplicationContext _db;
 
-    public UserRepository(JobAppTrackerContext db)
+    public UserRepository(JobApplicationContext db)
     {
         _db = db;
     }
 
-    public async Task<IEnumerable<User>> GetUsers()
-    {
-        return await _db.Users.ToListAsync();
-    }
-
-    public async Task<User?> GetUserById(Guid userId)
-    {
-        return await _db.Users.FindAsync(userId);
-    }
-
-    public async Task<User?> GetUserByUsername(string username)
-    {
-        return await _db.Users.SingleOrDefaultAsync(user => user.UserName == username);  
-    }
-
-    public async Task<User> AddUser(User user)
+    public async Task AddUser(User user)
     {
         await _db.Users.AddAsync(user);
         await _db.SaveChangesAsync();
-        return user;
     }
 
-    public async Task<User> UpdateUser(User user)
+    public async Task<User?> GetByEmail(string email)
     {
-        _db.Users.Update(user);
-        await _db.SaveChangesAsync();
-        return user;
+        return await _db.Users.SingleOrDefaultAsync(user => user.Email == email);
     }
 
-    public async Task<bool> UserExists(Guid userId)
+    public async Task<User?> GetById(Guid id)
     {
-        return await _db.Users.AnyAsync(user => user.Id == userId);
+        return await _db.Users.SingleOrDefaultAsync(user => user.UserId == id);
+    }
+
+    public async Task<User?> GetByUsername(string userName)
+    {
+        return await _db.Users.SingleOrDefaultAsync(user => user.UserName == userName);
     }
 }

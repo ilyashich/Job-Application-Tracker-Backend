@@ -14,9 +14,9 @@ namespace JobApplicationTracker.Controllers;
 [ApiController]
 public class JobApplicatiosController : ControllerBase
 {
-    private readonly JobAppTrackerContext _context;
+    private readonly JobApplicationContext _context;
 
-    public JobApplicatiosController(JobAppTrackerContext context)
+    public JobApplicatiosController(JobApplicationContext context)
     {
         _context = context;
     }

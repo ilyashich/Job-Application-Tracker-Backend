@@ -1,7 +1,12 @@
-﻿using JobApplicationTracker.Dtos;
+﻿using System.ComponentModel.DataAnnotations;
+using JobApplicationTracker.Dtos;
+using JobApplicationTracker.Dtos.Requests;
+using JobApplicationTracker.Extensions;
+using JobApplicationTracker.Services;
 using Microsoft.AspNetCore.Authorization;
-using Microsoft.AspNetCore.Http.HttpResults;
 using Microsoft.AspNetCore.Mvc;
+using OneOf;
+using OneOf.Types;
 
 namespace JobApplicationTracker.Controllers;
 
@@ -9,11 +14,23 @@ namespace JobApplicationTracker.Controllers;
 [ApiController]
 public class AuthController : ControllerBase
 {
-    [AllowAnonymous]
-    [HttpGet]
-    public async Task<IActionResult> Login([FromBody] UserLogin userLogin)
+    private readonly IUserService _userService;
+
+    public AuthController(IUserService userService)
     {
-        return Ok();
+        _userService = userService;
+    }
+
+    [HttpPost("register")]
+    [AllowAnonymous]
+    public async Task<IActionResult> Register([FromBody] RegisterUserRequest request)
+    {
+        var user = request.MapToUser();
+        var result = await _userService.Register(user);
+        return result.Match<IActionResult>(
+            newUser => Ok(newUser),
+            validationError => BadRequest(validationError)
+        );
     }
 
 }

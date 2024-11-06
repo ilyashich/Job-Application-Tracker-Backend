@@ -1,16 +1,26 @@
 ﻿using System.ComponentModel.DataAnnotations;
-using Microsoft.AspNetCore.Identity;
 
 namespace JobApplicationTracker.Models;
 
-public class User : IdentityUser<Guid>
+public class User
 {
-    [MaxLength(40)]
-    public string? FirstName { get; set; }
+    [Key]
+    public Guid UserId { get; set; } = Guid.NewGuid();
     
-    [MaxLength(40)]
-    public string? LastName { get; set; }
+    [MaxLength(64)]
+    public required string UserName { get; set; }
+    
+    [MaxLength(64)]
+    public required string Email { get; set; }
+    
+    [MaxLength(256)]
+    public required string HashedPassword { get; set; }
+    
+    [MaxLength(32)]
+    public required string FirstName { get; set; }
+    
+    [MaxLength(32)]
+    public required string LastName { get; set; }
     
     public virtual ICollection<JobApplication> JobApplications { get; set; } = new List<JobApplication>();
-    
 }
