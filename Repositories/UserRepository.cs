@@ -1,5 +1,6 @@
 ﻿using JobApplicationTracker.Data;
 using JobApplicationTracker.Models;
+using JobApplicationTracker.Repositories.Interfaces;
 using Microsoft.EntityFrameworkCore;
 
 namespace JobApplicationTracker.Repositories;
@@ -21,16 +22,22 @@ public class UserRepository : IUserRepository
 
     public async Task<User?> GetByEmail(string email)
     {
-        return await _db.Users.SingleOrDefaultAsync(user => user.Email == email);
+        return await _db.Users
+            .AsNoTracking()
+            .SingleOrDefaultAsync(user => user.Email == email);
     }
 
     public async Task<User?> GetById(Guid id)
     {
-        return await _db.Users.SingleOrDefaultAsync(user => user.UserId == id);
+        return await _db.Users
+            .AsNoTracking()
+            .SingleOrDefaultAsync(user => user.UserId == id);
     }
 
     public async Task<User?> GetByUsername(string userName)
     {
-        return await _db.Users.SingleOrDefaultAsync(user => user.UserName == userName);
+        return await _db.Users
+            .AsNoTracking()
+            .SingleOrDefaultAsync(user => user.UserName == userName);
     }
 }

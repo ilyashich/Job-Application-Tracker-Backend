@@ -1,12 +1,8 @@
-﻿using System.ComponentModel.DataAnnotations;
-using JobApplicationTracker.Dtos;
-using JobApplicationTracker.Dtos.Requests;
+﻿using JobApplicationTracker.Dtos.Requests;
 using JobApplicationTracker.Extensions;
-using JobApplicationTracker.Services;
+using JobApplicationTracker.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using OneOf;
-using OneOf.Types;
 
 namespace JobApplicationTracker.Controllers;
 
@@ -23,13 +19,25 @@ public class AuthController : ControllerBase
 
     [HttpPost("register")]
     [AllowAnonymous]
-    public async Task<IActionResult> Register([FromBody] RegisterUserRequest request)
+    public async Task<IActionResult> Register([FromBody] RegisterUserRequest registerRequest)
     {
-        var user = request.MapToUser();
-        var result = await _userService.Register(user);
-        return result.Match<IActionResult>(
-            newUser => Ok(newUser),
-            validationError => BadRequest(validationError)
+        var result = await _userService.Register(registerRequest);
+        return result.Match<IActionResult>
+        (
+            newUser => Ok(newUser.MapToResponse()),
+            validationFailed => BadRequest(validationFailed.MapToResponse())
+        );
+    }
+
+    [HttpPost("login")]
+    [AllowAnonymous]
+    public async Task<IActionResult> Login([FromBody] LoginUserRequest loginRequest)
+    {
+        var result = await _userService.Login(loginRequest);
+        return result.Match<IActionResult>
+        (
+            token => Ok(token),
+            validationFailed => BadRequest(validationFailed.MapToResponse())
         );
     }
 

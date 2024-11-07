@@ -1,11 +1,7 @@
-﻿using System.ComponentModel.DataAnnotations;
+﻿namespace JobApplicationTracker.Dtos.Requests;
 
-namespace JobApplicationTracker.Dtos.Requests;
-
-public record LoginUserRequest
-(
-    [Required] 
-    string Email, 
-    [Required] 
-    string Password
-);
+public class LoginUserRequest()
+{
+    public required string UserName { get; init; }
+    public required string Password { get; init; }
+}

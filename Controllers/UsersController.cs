@@ -1,9 +1,7 @@
-using System.Security.Claims;
+using System.IdentityModel.Tokens.Jwt;
 using JobApplicationTracker.Data;
-using JobApplicationTracker.Models;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 
 namespace JobApplicationTracker.Controllers;
 
@@ -11,8 +9,7 @@ namespace JobApplicationTracker.Controllers;
 [ApiController]
 public class UsersController : ControllerBase
 {
-    JobApplicationContext _context;
-
+    private readonly JobApplicationContext _context;
     public UsersController(JobApplicationContext context)
     {
         _context = context;
@@ -20,11 +17,10 @@ public class UsersController : ControllerBase
 
     [HttpGet]
     [Authorize]
-    public async Task<ActionResult<User>> Greetings()
+    public ActionResult<string> Greetings()
     {
-        var userName = User.Identity!.Name;
-        var user = await _context.Users.SingleOrDefaultAsync(user => user.UserName == userName);
-        return Ok(user);
+        var userId = HttpContext.User;
+        return Ok(HttpContext.User.FindFirst("http://schemas.xmlsoap.org/ws/2005/05/identity/claims/nameidentifier")?.Value);
     }
 }
 

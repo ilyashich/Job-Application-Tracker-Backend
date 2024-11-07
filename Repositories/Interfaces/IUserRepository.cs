@@ -1,6 +1,6 @@
 ﻿using JobApplicationTracker.Models;
 
-namespace JobApplicationTracker.Repositories;
+namespace JobApplicationTracker.Repositories.Interfaces;
 
 public interface IUserRepository
 {
