@@ -6,19 +6,20 @@ public class JobApplication
 {
     [Key]
     public int JobApplicationId { get; set; }
-    [Required]
+    
     [MaxLength(64)]
-    public string JobTitle { get; set; } = default!;
-    [Required]
+    public required string JobTitle { get; set; }
+    
     [MaxLength(64)]
-    public string CompanyName { get; set; } = default!;
-    [Required]
-    public JobApplicationStatus JobApplicationStatus { get; set; }
-    [Required]
-    public DateOnly ApplicationDate { get; set; } 
-    [Required]
+    public required string CompanyName { get; set; }
+    
+    public required JobApplicationStatus JobApplicationStatus { get; set; }
+    
+    public required DateOnly ApplicationDate { get; set; } 
+    
     [MaxLength(256)]
-    public string JobPostingUrl { get; set; } = default!;
+    public required string JobPostingUrl { get; set; }
+    
     [MaxLength(256)]
     public string? Notes { get; set; }
 

@@ -11,10 +11,12 @@ namespace JobApplicationTracker.Controllers;
 public class AuthController : ControllerBase
 {
     private readonly IUserService _userService;
+    private readonly IConfiguration _configuration;
 
-    public AuthController(IUserService userService)
+    public AuthController(IUserService userService, IConfiguration configuration)
     {
         _userService = userService;
+        _configuration = configuration;
     }
 
     [HttpPost("register")]
@@ -36,9 +38,22 @@ public class AuthController : ControllerBase
         var result = await _userService.Login(loginRequest);
         return result.Match<IActionResult>
         (
-            token => Ok(token),
+            token =>
+            {
+                HttpContext.Response.Cookies.Append(_configuration["JwtOptions:CookieName"]!,token);
+                return Ok();
+            },
             validationFailed => BadRequest(validationFailed.MapToResponse())
         );
+    }
+    
+    [HttpPost("logout")]
+    [Authorize]
+    public IActionResult Logout()
+    {
+        HttpContext.Response.Cookies.Delete(_configuration["JwtOptions:CookieName"]!);
+
+        return Ok("Logged out successfully.");
     }
 
 }

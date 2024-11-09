@@ -29,6 +29,7 @@ public class AuthService: IAuthService
 
     public string GenerateToken(User user)
     {
+        var tokenHandler = new JwtSecurityTokenHandler();
         var securityKey = new SymmetricSecurityKey(Encoding.UTF8.GetBytes(_config["JwtOptions:SecretKey"]!));
         var credentials = new SigningCredentials(securityKey, SecurityAlgorithms.HmacSha256);
 
@@ -39,17 +40,17 @@ public class AuthService: IAuthService
             new Claim(JwtRegisteredClaimNames.Email, user.Email)
         };
 
-        var token = new JwtSecurityToken
-        (
-            issuer: _config["JwtOptions:Issuer"],
-            audience: _config["JwtOptions:Audience"],
-            claims: claims,
-            signingCredentials: credentials,
-            expires: DateTime.UtcNow.AddSeconds(Convert.ToDouble(_config["JwtOptions:ExpiresSeconds"]))
-        );
+        var tokenDescriptor = new SecurityTokenDescriptor
+        {
+            Subject = new ClaimsIdentity(claims),
+            Expires = DateTime.UtcNow.AddSeconds(Convert.ToDouble(_config["JwtOptions:ExpiresSeconds"])),
+            Issuer = _config["JwtOptions:Issuer"],
+            Audience = _config["JwtOptions:Audience"],
+            SigningCredentials = credentials
+        };
 
-        var tokenValue = new JwtSecurityTokenHandler().WriteToken(token);
+        var token = tokenHandler.CreateToken(tokenDescriptor);
 
-        return tokenValue;
+        return tokenHandler.WriteToken(token);
     }
 }
