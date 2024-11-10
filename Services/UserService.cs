@@ -1,6 +1,5 @@
 ﻿using FluentValidation;
 using JobApplicationTracker.Models;
-using JobApplicationTracker.Repositories;
 using JobApplicationTracker.Validation;
 using OneOf;
 using FluentValidation.Results;
@@ -53,7 +52,7 @@ public class UserService : IUserService
             return new ValidationFailed(errors);
         }
 
-        user.HashedPassword = _authService.HashPassword(user.HashedPassword);
+        user.PasswordHash = _authService.HashPassword(user.PasswordHash);
 
         await _userRepository.AddUser(user);
         return user;
@@ -69,11 +68,11 @@ public class UserService : IUserService
             return new ValidationFailed(error);
         }
         
-        var isPasswordCorrect = _authService.VerifyPassword(loginRequest.Password, existingUser.HashedPassword);
+        var isPasswordCorrect = _authService.VerifyPassword(loginRequest.Password, existingUser.PasswordHash);
 
         if (!isPasswordCorrect)
         {
-            var error = new ValidationFailure("Login", $"Wrong username or password.");
+            var error = new ValidationFailure("Login", "Wrong username or password.");
             return new ValidationFailed(error);
         }
 

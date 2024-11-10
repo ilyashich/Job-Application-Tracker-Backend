@@ -31,7 +31,7 @@ public class UserRepository : IUserRepository
     {
         return await _db.Users
             .AsNoTracking()
-            .SingleOrDefaultAsync(user => user.UserId == id);
+            .SingleOrDefaultAsync(user => user.Id == id);
     }
 
     public async Task<User?> GetByUsername(string userName)

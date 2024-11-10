@@ -21,9 +21,9 @@ namespace JobApplicationTracker.Migrations
 
             modelBuilder.Entity("JobApplicationTracker.Models.JobApplication", b =>
                 {
-                    b.Property<int>("JobApplicationId")
+                    b.Property<Guid>("JobApplicationId")
                         .ValueGeneratedOnAdd()
-                        .HasColumnType("int");
+                        .HasColumnType("char(36)");
 
                     b.Property<DateOnly>("ApplicationDate")
                         .HasColumnType("date");
@@ -58,6 +58,19 @@ namespace JobApplicationTracker.Migrations
                     b.HasIndex("UserId");
 
                     b.ToTable("JobApplications");
+
+                    b.HasData(
+                        new
+                        {
+                            JobApplicationId = new Guid("369af106-4c08-437c-8130-1dffdedd0d4c"),
+                            ApplicationDate = new DateOnly(2024, 11, 9),
+                            CompanyName = "Samsung",
+                            JobApplicationStatus = 2,
+                            JobPostingUrl = "https://www.samsung.com/careers",
+                            JobTitle = "Junior Java Developer",
+                            Notes = "Super cool job application",
+                            UserId = new Guid("2762580d-543e-4bdf-89bb-f43cc329066e")
+                        });
                 });
 
             modelBuilder.Entity("JobApplicationTracker.Models.User", b =>
@@ -76,15 +89,15 @@ namespace JobApplicationTracker.Migrations
                         .HasMaxLength(32)
                         .HasColumnType("varchar(32)");
 
-                    b.Property<string>("HashedPassword")
-                        .IsRequired()
-                        .HasMaxLength(256)
-                        .HasColumnType("varchar(256)");
-
                     b.Property<string>("LastName")
                         .IsRequired()
                         .HasMaxLength(32)
                         .HasColumnType("varchar(32)");
+
+                    b.Property<string>("PasswordHash")
+                        .IsRequired()
+                        .HasMaxLength(256)
+                        .HasColumnType("varchar(256)");
 
                     b.Property<string>("UserName")
                         .IsRequired()
@@ -94,6 +107,26 @@ namespace JobApplicationTracker.Migrations
                     b.HasKey("UserId");
 
                     b.ToTable("Users");
+
+                    b.HasData(
+                        new
+                        {
+                            UserId = new Guid("2762580d-543e-4bdf-89bb-f43cc329066e"),
+                            Email = "illia@gmail.com",
+                            FirstName = "Illia",
+                            LastName = "Yatskevich",
+                            PasswordHash = "$2a$11$ChChWKfnCukVSfypFdXcsukH9o.VRHn74Gi0BpdrZL0.3AZXrUhmy",
+                            UserName = "illia"
+                        },
+                        new
+                        {
+                            UserId = new Guid("aaee2115-9e9c-4ac7-972d-8a82dbdb446a"),
+                            Email = "alex@gmail.com",
+                            FirstName = "Alex",
+                            LastName = "Huts",
+                            PasswordHash = "$2a$11$aNprsJfhwKeeVpzYolfx8u4YuYnikDIgnkqkeeU3OtsKaIK55Jt1G",
+                            UserName = "alex"
+                        });
                 });
 
             modelBuilder.Entity("JobApplicationTracker.Models.JobApplication", b =>

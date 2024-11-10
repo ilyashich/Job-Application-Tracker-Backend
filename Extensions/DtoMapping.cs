@@ -11,12 +11,12 @@ public static class DtoMapping
     {
         return new User
         {
-            UserId = Guid.NewGuid(),
+            Id = Guid.NewGuid(),
             UserName = request.UserName,
             Email = request.Email,
-            HashedPassword = request.Password,
+            PasswordHash = request.Password,
             FirstName = request.FirstName,
-            LastName = request.LastName,
+            LastName = request.LastName
         };
     }
     
@@ -24,7 +24,7 @@ public static class DtoMapping
     {
         return new RegisterUserResponse
         {
-            UserId = user.UserId,
+            UserId = user.Id,
             UserName = user.UserName,
             Email = user.Email,
             FirstName = user.FirstName,

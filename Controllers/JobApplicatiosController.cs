@@ -1,36 +1,32 @@
-using System;
-using System.Collections.Generic;
-using System.Linq;
-using System.Threading.Tasks;
-using Microsoft.AspNetCore.Http;
 using Microsoft.AspNetCore.Mvc;
 using Microsoft.EntityFrameworkCore;
-using JobApplicationTracker.Data;
 using JobApplicationTracker.Models;
+using JobApplicationTracker.Services;
 
 namespace JobApplicationTracker.Controllers;
 
 [Route("api/[controller]")]
 [ApiController]
-public class JobApplicatiosController : ControllerBase
+public class JobApplicationsController : ControllerBase
 {
-    private readonly JobApplicationContext _context;
+    private readonly JobApplicationService _jobApplicationService;
 
-    public JobApplicatiosController(JobApplicationContext context)
+    public JobApplicationsController(JobApplicationService jobApplicationService)
     {
-        _context = context;
+        _jobApplicationService = jobApplicationService;
     }
 
-    // GET: api/JobApplicatios
+    // GET: api/JobApplications
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<JobApplication>>> GetJobApplications()
+    public async Task<ActionResult<IEnumerable<JobApplication>>> GetUsersApplications([FromBody] Guid userId)
     {
-        return await _context.JobApplications.ToListAsync();
+        var jobApplications = await _jobApplicationService.GetUsersApplications(userId);
+        return Ok(jobApplications);
     }
 
-    // GET: api/JobApplicatios/5
+    // GET: api/JobApplications/5
     [HttpGet("{id}")]
-    public async Task<ActionResult<JobApplication>> GetJobApplication(int id)
+    public async Task<ActionResult<JobApplication>> GetJobApplication(Guid id)
     {
         var jobApplication = await _context.JobApplications.FindAsync(id);
 
@@ -42,12 +38,12 @@ public class JobApplicatiosController : ControllerBase
         return jobApplication;
     }
 
-    // PUT: api/JobApplicatios/5
+    // PUT: api/JobApplications/5
     // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
     [HttpPut("{id}")]
-    public async Task<IActionResult> PutJobApplication(int id, JobApplication jobApplication)
+    public async Task<IActionResult> PutJobApplication(Guid id, JobApplication jobApplication)
     {
-        if (id != jobApplication.JobApplicationId)
+        if (id != jobApplication.Id)
         {
             return BadRequest();
         }
@@ -73,7 +69,7 @@ public class JobApplicatiosController : ControllerBase
         return NoContent();
     }
 
-    // POST: api/JobApplicatios
+    // POST: api/JobApplications
     // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
     [HttpPost]
     public async Task<ActionResult<JobApplication>> PostJobApplication(JobApplication jobApplication)
@@ -81,10 +77,10 @@ public class JobApplicatiosController : ControllerBase
         _context.JobApplications.Add(jobApplication);
         await _context.SaveChangesAsync();
 
-        return CreatedAtAction("GetJobApplication", new { id = jobApplication.JobApplicationId }, jobApplication);
+        return CreatedAtAction("GetJobApplication", new { id = jobApplication.Id }, jobApplication);
     }
 
-    // DELETE: api/JobApplicatios/5
+    // DELETE: api/JobApplications/5
     [HttpDelete("{id}")]
     public async Task<IActionResult> DeleteJobApplication(int id)
     {
@@ -100,7 +96,7 @@ public class JobApplicatiosController : ControllerBase
         return NoContent();
     }
 
-    private bool JobApplicationExists(int id)
+    private bool JobApplicationExists(Guid id)
     {
         return _context.JobApplications.Any(e => e.JobApplicationId == id);
     }

@@ -5,24 +5,24 @@ namespace JobApplicationTracker.Models;
 public class JobApplication
 {
     [Key]
-    public int JobApplicationId { get; set; }
+    public required Guid Id { get; init; } = Guid.NewGuid();
     
     [MaxLength(64)]
-    public required string JobTitle { get; set; }
+    public required string JobTitle { get; init; }
     
     [MaxLength(64)]
-    public required string CompanyName { get; set; }
+    public required string CompanyName { get; init; }
     
-    public required JobApplicationStatus JobApplicationStatus { get; set; }
+    public required JobApplicationStatus JobApplicationStatus { get; init; }
     
-    public required DateOnly ApplicationDate { get; set; } 
-    
-    [MaxLength(256)]
-    public required string JobPostingUrl { get; set; }
+    public required DateOnly ApplicationDate { get; init; } 
     
     [MaxLength(256)]
-    public string? Notes { get; set; }
+    public required string JobPostingUrl { get; init; }
+    
+    [MaxLength(256)]
+    public string? Notes { get; init; }
 
-    public Guid UserId { get; set; }
-    public virtual User? User { get; set; }
+    public required Guid UserId { get; init; }
+    public virtual User? User { get; init; }
 }
