@@ -2,9 +2,9 @@
 using JobApplicationTracker.Models;
 using JobApplicationTracker.Validation;
 using OneOf;
-using FluentValidation.Results;
-using JobApplicationTracker.Dtos.Requests;
-using JobApplicationTracker.Extensions;
+using JobApplicationTracker.Contracts;
+using JobApplicationTracker.Contracts.Requests;
+using JobApplicationTracker.Errors;
 using JobApplicationTracker.Repositories.Interfaces;
 using JobApplicationTracker.Services.Interfaces;
 
@@ -23,7 +23,7 @@ public class UserService : IUserService
         _authService = authService;
     }
 
-    public async Task<OneOf<User, ValidationFailed>> Register(RegisterUserRequest registerRequest)
+    public async Task<OneOf<User, ValidationFailed, Error>> Register(RegisterUserRequest registerRequest)
     {
         var user = registerRequest.MapToUser();
         var validationResult = await _userValidator.ValidateAsync(user);
@@ -35,21 +35,16 @@ public class UserService : IUserService
         var existingUserEmail = await _userRepository.GetByEmail(user.Email);
         var existingUserName = await _userRepository.GetByUsername(user.UserName);
         
-        var errors = new List<ValidationFailure>();
+        //var errors = new List<ValidationFailure>();
         
         if (existingUserEmail != null)
         {
-            errors.Add(new ValidationFailure("Email", $"User with email {user.Email} already exists."));
+            return new EmailAlreadyExistsError(user.Email);
         }
 
         if (existingUserName != null)
         {
-            errors.Add(new ValidationFailure("Username", $"User with username {user.UserName} already exists."));
-        }
-
-        if (errors.Count != 0)
-        {
-            return new ValidationFailed(errors);
+            return new UsernameAlreadyExistsError(user.UserName);
         }
 
         user.PasswordHash = _authService.HashPassword(user.PasswordHash);
@@ -58,22 +53,20 @@ public class UserService : IUserService
         return user;
     }
 
-    public async  Task<OneOf<string, ValidationFailed>> Login(LoginUserRequest loginRequest)
+    public async  Task<OneOf<string, ValidationFailed, Error>> Login(LoginUserRequest loginRequest)
     {
         var existingUser = await _userRepository.GetByUsername(loginRequest.UserName);
 
         if (existingUser == null)
         {
-            var error = new ValidationFailure("Username", $"User with username {loginRequest.UserName} does not exist.");
-            return new ValidationFailed(error);
+            return new UsernameDoesNotExistError(loginRequest.UserName);
         }
         
         var isPasswordCorrect = _authService.VerifyPassword(loginRequest.Password, existingUser.PasswordHash);
 
         if (!isPasswordCorrect)
         {
-            var error = new ValidationFailure("Login", "Wrong username or password.");
-            return new ValidationFailed(error);
+            return new WrongUserNameOrPasswordError();
         }
 
         var token = _authService.GenerateToken(existingUser);

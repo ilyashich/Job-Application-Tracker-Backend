@@ -1,5 +1,5 @@
-﻿using JobApplicationTracker.Dtos.Requests;
-using JobApplicationTracker.Extensions;
+﻿using JobApplicationTracker.Contracts;
+using JobApplicationTracker.Contracts.Requests;
 using JobApplicationTracker.Services.Interfaces;
 using Microsoft.AspNetCore.Authorization;
 using Microsoft.AspNetCore.Mvc;
@@ -27,7 +27,8 @@ public class AuthController : ControllerBase
         return result.Match<IActionResult>
         (
             newUser => Ok(newUser.MapToResponse()),
-            validationFailed => BadRequest(validationFailed.MapToResponse())
+            validationFailed => BadRequest(validationFailed.MapToResponse()),
+            error => BadRequest(error.Description)
         );
     }
 
@@ -43,7 +44,8 @@ public class AuthController : ControllerBase
                 HttpContext.Response.Cookies.Append(_configuration["JwtOptions:CookieName"]!,token);
                 return Ok();
             },
-            validationFailed => BadRequest(validationFailed.MapToResponse())
+            validationFailed => BadRequest(validationFailed.MapToResponse()),
+            error => BadRequest(error.Description)
         );
     }
     

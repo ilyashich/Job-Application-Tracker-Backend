@@ -3,6 +3,7 @@ using System;
 using JobApplicationTracker.Data;
 using Microsoft.EntityFrameworkCore;
 using Microsoft.EntityFrameworkCore.Infrastructure;
+using Microsoft.EntityFrameworkCore.Metadata;
 using Microsoft.EntityFrameworkCore.Storage.ValueConversion;
 
 #nullable disable
@@ -19,9 +20,11 @@ namespace JobApplicationTracker.Migrations
                 .HasAnnotation("ProductVersion", "8.0.10")
                 .HasAnnotation("Relational:MaxIdentifierLength", 64);
 
+            MySqlModelBuilderExtensions.AutoIncrementColumns(modelBuilder);
+
             modelBuilder.Entity("JobApplicationTracker.Models.JobApplication", b =>
                 {
-                    b.Property<Guid>("JobApplicationId")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("char(36)");
 
@@ -53,7 +56,7 @@ namespace JobApplicationTracker.Migrations
                     b.Property<Guid>("UserId")
                         .HasColumnType("char(36)");
 
-                    b.HasKey("JobApplicationId");
+                    b.HasKey("Id");
 
                     b.HasIndex("UserId");
 
@@ -62,20 +65,20 @@ namespace JobApplicationTracker.Migrations
                     b.HasData(
                         new
                         {
-                            JobApplicationId = new Guid("369af106-4c08-437c-8130-1dffdedd0d4c"),
-                            ApplicationDate = new DateOnly(2024, 11, 9),
+                            Id = new Guid("dee4615f-b49f-4dea-8cb2-7332ae269ea0"),
+                            ApplicationDate = new DateOnly(2024, 11, 10),
                             CompanyName = "Samsung",
                             JobApplicationStatus = 2,
                             JobPostingUrl = "https://www.samsung.com/careers",
                             JobTitle = "Junior Java Developer",
                             Notes = "Super cool job application",
-                            UserId = new Guid("2762580d-543e-4bdf-89bb-f43cc329066e")
+                            UserId = new Guid("bfed160c-2b96-4906-b61e-c326f24d3e2d")
                         });
                 });
 
             modelBuilder.Entity("JobApplicationTracker.Models.User", b =>
                 {
-                    b.Property<Guid>("UserId")
+                    b.Property<Guid>("Id")
                         .ValueGeneratedOnAdd()
                         .HasColumnType("char(36)");
 
@@ -104,14 +107,14 @@ namespace JobApplicationTracker.Migrations
                         .HasMaxLength(64)
                         .HasColumnType("varchar(64)");
 
-                    b.HasKey("UserId");
+                    b.HasKey("Id");
 
                     b.ToTable("Users");
 
                     b.HasData(
                         new
                         {
-                            UserId = new Guid("2762580d-543e-4bdf-89bb-f43cc329066e"),
+                            Id = new Guid("bfed160c-2b96-4906-b61e-c326f24d3e2d"),
                             Email = "illia@gmail.com",
                             FirstName = "Illia",
                             LastName = "Yatskevich",
@@ -120,7 +123,7 @@ namespace JobApplicationTracker.Migrations
                         },
                         new
                         {
-                            UserId = new Guid("aaee2115-9e9c-4ac7-972d-8a82dbdb446a"),
+                            Id = new Guid("b4ec2e61-b131-431b-a133-c5513d8fd3f9"),
                             Email = "alex@gmail.com",
                             FirstName = "Alex",
                             LastName = "Huts",

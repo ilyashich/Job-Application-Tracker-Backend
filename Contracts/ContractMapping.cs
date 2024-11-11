@@ -1,11 +1,11 @@
-﻿using JobApplicationTracker.Dtos.Requests;
-using JobApplicationTracker.Dtos.Responses;
+﻿using JobApplicationTracker.Contracts.Requests;
+using JobApplicationTracker.Contracts.Responses;
 using JobApplicationTracker.Models;
 using JobApplicationTracker.Validation;
 
-namespace JobApplicationTracker.Extensions;
+namespace JobApplicationTracker.Contracts;
 
-public static class DtoMapping
+public static class ContractMapping
 {
     public static User MapToUser(this RegisterUserRequest request)
     {
@@ -19,7 +19,22 @@ public static class DtoMapping
             LastName = request.LastName
         };
     }
-    
+
+    public static JobApplication MapToJobApplication(this CreateJobApplicationRequest request, Guid userId)
+    {
+        return new JobApplication
+        {
+            Id = Guid.NewGuid(),
+            JobTitle = request.JobTitle,
+            CompanyName = request.CompanyName,
+            ApplicationDate = request.ApplicationDate,
+            JobApplicationStatus = request.JobApplicationStatus,
+            JobPostingUrl = request.JobPostingUrl,
+            Notes = request.Notes,
+            UserId = userId
+        };
+    }
+
     public static RegisterUserResponse MapToResponse(this User user)
     {
         return new RegisterUserResponse

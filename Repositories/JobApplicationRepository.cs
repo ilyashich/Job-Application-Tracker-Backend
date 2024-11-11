@@ -21,7 +21,7 @@ public class JobApplicationRepository : IJobApplicationRepository
             .Where(application => application.UserId == userId).ToListAsync();
     }
 
-    public async Task<JobApplication?> GetById(Guid id)
+    public async Task<JobApplication?> GetJobApplicationById(Guid id)
     {
         return await _db.JobApplications
             .AsNoTracking()
@@ -49,11 +49,11 @@ public class JobApplicationRepository : IJobApplicationRepository
         return jobApplication.Id;
     }
 
-    public async Task<Guid> DeleteJobApplication(JobApplication jobApplication)
+    public async Task<Guid> DeleteJobApplication(Guid id)
     {
         await _db.JobApplications
-            .Where(j => j.Id == jobApplication.Id)
+            .Where(j => j.Id == id)
             .ExecuteDeleteAsync();
-        return jobApplication.Id;
+        return id;
     }
 }

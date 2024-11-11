@@ -1,4 +1,4 @@
-﻿namespace JobApplicationTracker.Dtos.Requests;
+﻿namespace JobApplicationTracker.Contracts.Requests;
 
 public class RegisterUserRequest()
 {

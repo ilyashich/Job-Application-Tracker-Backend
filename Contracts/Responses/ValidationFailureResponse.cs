@@ -1,4 +1,4 @@
-﻿namespace JobApplicationTracker.Dtos.Responses;
+﻿namespace JobApplicationTracker.Contracts.Responses;
 
 public class ValidationFailureResponse
 {

@@ -1,7 +1,9 @@
+using JobApplicationTracker.Contracts.Requests;
+using JobApplicationTracker.Extensions;
 using Microsoft.AspNetCore.Mvc;
-using Microsoft.EntityFrameworkCore;
 using JobApplicationTracker.Models;
-using JobApplicationTracker.Services;
+using JobApplicationTracker.Services.Interfaces;
+using Microsoft.AspNetCore.Authorization;
 
 namespace JobApplicationTracker.Controllers;
 
@@ -9,96 +11,74 @@ namespace JobApplicationTracker.Controllers;
 [ApiController]
 public class JobApplicationsController : ControllerBase
 {
-    private readonly JobApplicationService _jobApplicationService;
+    private readonly IJobApplicationService _jobApplicationService;
 
-    public JobApplicationsController(JobApplicationService jobApplicationService)
+    public JobApplicationsController(IJobApplicationService jobApplicationService)
     {
         _jobApplicationService = jobApplicationService;
     }
 
-    // GET: api/JobApplications
+    [Authorize]
     [HttpGet]
-    public async Task<ActionResult<IEnumerable<JobApplication>>> GetUsersApplications([FromBody] Guid userId)
+    public async Task<ActionResult<IEnumerable<JobApplication>>> GetUsersApplications()
     {
+        var userId = HttpContext.User.GetUserId();
         var jobApplications = await _jobApplicationService.GetUsersApplications(userId);
         return Ok(jobApplications);
     }
-
-    // GET: api/JobApplications/5
-    [HttpGet("{id}")]
+    
+    [Authorize]
+    [HttpGet("{id:guid}")]
     public async Task<ActionResult<JobApplication>> GetJobApplication(Guid id)
     {
-        var jobApplication = await _context.JobApplications.FindAsync(id);
+        var jobApplication = await _jobApplicationService.GetById(id);
 
         if (jobApplication == null)
         {
             return NotFound();
         }
 
-        return jobApplication;
+        return Ok(jobApplication);
+    }
+    
+    [Authorize]
+    [HttpPost]
+    public async Task<ActionResult<JobApplication>> CreateJobApplication([FromBody]CreateJobApplicationRequest request)
+    {
+        var userId = HttpContext.User.GetUserId();
+        
+        var createdId = await _jobApplicationService.CreateJobApplication(userId, request);
+
+        return CreatedAtAction("GetJobApplication", new { id = createdId }, createdId);
     }
 
-    // PUT: api/JobApplications/5
-    // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-    [HttpPut("{id}")]
-    public async Task<IActionResult> PutJobApplication(Guid id, JobApplication jobApplication)
+    [Authorize]
+    [HttpPut("{id:guid}")]
+    public async Task<IActionResult> UpdateJobApplication(Guid id, [FromBody]JobApplication jobApplication)
     {
         if (id != jobApplication.Id)
         {
             return BadRequest();
         }
+        
+        var userId = HttpContext.User.GetUserId();
 
-        _context.Entry(jobApplication).State = EntityState.Modified;
-
-        try
-        {
-            await _context.SaveChangesAsync();
-        }
-        catch (DbUpdateConcurrencyException)
-        {
-            if (!JobApplicationExists(id))
-            {
-                return NotFound();
-            }
-            else
-            {
-                throw;
-            }
-        }
-
-        return NoContent();
+        var updatedId = await _jobApplicationService.UpdateJobApplication(jobApplication, userId);
+        return Ok(updatedId);
     }
-
-    // POST: api/JobApplications
-    // To protect from overposting attacks, see https://go.microsoft.com/fwlink/?linkid=2123754
-    [HttpPost]
-    public async Task<ActionResult<JobApplication>> PostJobApplication(JobApplication jobApplication)
+    
+    [Authorize]
+    [HttpDelete("{id:guid}")]
+    public async Task<IActionResult> DeleteJobApplication(Guid id)
     {
-        _context.JobApplications.Add(jobApplication);
-        await _context.SaveChangesAsync();
-
-        return CreatedAtAction("GetJobApplication", new { id = jobApplication.Id }, jobApplication);
-    }
-
-    // DELETE: api/JobApplications/5
-    [HttpDelete("{id}")]
-    public async Task<IActionResult> DeleteJobApplication(int id)
-    {
-        var jobApplication = await _context.JobApplications.FindAsync(id);
-        if (jobApplication == null)
-        {
-            return NotFound();
-        }
-
-        _context.JobApplications.Remove(jobApplication);
-        await _context.SaveChangesAsync();
-
-        return NoContent();
-    }
-
-    private bool JobApplicationExists(Guid id)
-    {
-        return _context.JobApplications.Any(e => e.JobApplicationId == id);
+        var userId = HttpContext.User.GetUserId();
+        var result = await _jobApplicationService.DeleteJobApplication(id, userId);
+        return result.Match<IActionResult>
+        (
+            guid => Ok(guid),
+            jobApplicationDoesNotExist => BadRequest(jobApplicationDoesNotExist.Description),
+            authorizationEditError => Unauthorized(authorizationEditError.Description)
+        );
     }
 }
 

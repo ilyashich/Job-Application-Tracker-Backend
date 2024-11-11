@@ -5,7 +5,7 @@ namespace JobApplicationTracker.Models;
 public class User
 {
     [Key]
-    public required Guid Id { get; init; } = Guid.NewGuid();
+    public Guid Id { get; init; } = Guid.NewGuid();
     
     [MaxLength(64)]
     public required string UserName { get; init; }
