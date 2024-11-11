@@ -47,24 +47,30 @@ public class JobApplicationsController : ControllerBase
     {
         var userId = HttpContext.User.GetUserId();
         
-        var createdId = await _jobApplicationService.CreateJobApplication(userId, request);
+        var createdId = await _jobApplicationService.CreateJobApplication(request, userId);
 
         return CreatedAtAction("GetJobApplication", new { id = createdId }, createdId);
     }
 
     [Authorize]
     [HttpPut("{id:guid}")]
-    public async Task<IActionResult> UpdateJobApplication(Guid id, [FromBody]JobApplication jobApplication)
+    public async Task<IActionResult> UpdateJobApplication(Guid id, [FromBody]UpdateJobApplicationRequest request)
     {
-        if (id != jobApplication.Id)
+        if (id != request.Id)
         {
             return BadRequest();
         }
         
         var userId = HttpContext.User.GetUserId();
 
-        var updatedId = await _jobApplicationService.UpdateJobApplication(jobApplication, userId);
-        return Ok(updatedId);
+        var result = await _jobApplicationService.UpdateJobApplication(request, userId);
+        return result.Match<IActionResult>
+        (
+            guid => Ok(guid),
+            jobApplicationDoesNotExist => BadRequest(jobApplicationDoesNotExist.Description),
+            authorizationEditError => Unauthorized(authorizationEditError.Description),
+            validationFailed => BadRequest(validationFailed.Errors)
+        );
     }
     
     [Authorize]

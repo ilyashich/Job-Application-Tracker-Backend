@@ -4,6 +4,7 @@ namespace JobApplicationTracker.Contracts.Requests;
 
 public class UpdateJobApplicationRequest
 {
+    public required Guid Id { get; init; }
     public required string JobTitle { get; init; }
     public required string CompanyName { get; init; }
     public required JobApplicationStatus JobApplicationStatus { get; init; }

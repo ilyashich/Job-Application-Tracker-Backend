@@ -10,7 +10,7 @@ public interface IJobApplicationService
 {
     Task<IEnumerable<JobApplication>> GetUsersApplications(Guid userId);
     Task<JobApplication?> GetById(Guid id);
-    Task<Guid> CreateJobApplication(Guid userId, CreateJobApplicationRequest request);
-    Task<Guid> UpdateJobApplication(JobApplication jobApplication, Guid userId);
+    Task<OneOf<Guid, ValidationFailed>> CreateJobApplication(CreateJobApplicationRequest request, Guid userId);
+    Task<OneOf<Guid, JobApplicationDoesNotExistError, AuthorizationEditError, ValidationFailed>> UpdateJobApplication(UpdateJobApplicationRequest request, Guid userId);
     Task<OneOf<Guid, JobApplicationDoesNotExistError, AuthorizationEditError>> DeleteJobApplication(Guid jobApplicationId, Guid userId);
 }

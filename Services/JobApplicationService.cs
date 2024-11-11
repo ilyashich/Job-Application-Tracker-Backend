@@ -1,4 +1,5 @@
-﻿using FluentValidation.Results;
+﻿using FluentValidation;
+using FluentValidation.Results;
 using JobApplicationTracker.Contracts;
 using JobApplicationTracker.Contracts.Requests;
 using JobApplicationTracker.Errors;
@@ -13,10 +14,12 @@ namespace JobApplicationTracker.Services;
 public class JobApplicationService : IJobApplicationService
 {
     private readonly IJobApplicationRepository _jobRepository;
+    private readonly IValidator<JobApplication> _jobApplicationValidator;
 
-    public JobApplicationService(IJobApplicationRepository jobRepository)
+    public JobApplicationService(IJobApplicationRepository jobRepository, IValidator<JobApplication> jobApplicationValidator)
     {
         _jobRepository = jobRepository;
+        _jobApplicationValidator = jobApplicationValidator;
     }
 
     public async Task<IEnumerable<JobApplication>> GetUsersApplications(Guid userId)
@@ -29,14 +32,39 @@ public class JobApplicationService : IJobApplicationService
         return await _jobRepository.GetJobApplicationById(id);
     }
 
-    public async Task<Guid> CreateJobApplication(Guid userId, CreateJobApplicationRequest request)
+    public async Task<OneOf<Guid, ValidationFailed>> CreateJobApplication(CreateJobApplicationRequest request, Guid userId)
     {
         var jobApplication = request.MapToJobApplication(userId);
+        var validationResult = await _jobApplicationValidator.ValidateAsync(jobApplication);
+        if (!validationResult.IsValid)
+        {
+            return new ValidationFailed(validationResult.Errors);
+        }
         return await _jobRepository.CreateJobApplication(jobApplication);
     }
 
-    public async Task<Guid> UpdateJobApplication(JobApplication jobApplication, Guid userId)
+    public async Task<OneOf<Guid, JobApplicationDoesNotExistError, AuthorizationEditError, ValidationFailed>> UpdateJobApplication(UpdateJobApplicationRequest request, Guid userId)
     {
+        var existingJobApplication = await _jobRepository.GetJobApplicationById(request.Id);
+        
+        if (existingJobApplication == null)
+        {
+            return new JobApplicationDoesNotExistError(request.Id);
+        }
+        
+        if (existingJobApplication.UserId != userId)
+        {
+            return new AuthorizationEditError();
+        }
+        
+        var jobApplication = request.MapToJobApplication(userId);
+        
+        var validationResult = await _jobApplicationValidator.ValidateAsync(jobApplication);
+        if (!validationResult.IsValid)
+        {
+            return new ValidationFailed(validationResult.Errors);
+        }
+        
         return await _jobRepository.UpdateJobApplication(jobApplication);
     }
 

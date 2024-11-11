@@ -1,6 +1,6 @@
 ﻿namespace JobApplicationTracker.Contracts.Requests;
 
-public class RegisterUserRequest()
+public class RegisterUserRequest
 {
     public required string UserName { get; init; }
     public required string Email { get; init; }

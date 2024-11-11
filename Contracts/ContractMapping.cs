@@ -34,6 +34,21 @@ public static class ContractMapping
             UserId = userId
         };
     }
+    
+    public static JobApplication MapToJobApplication(this UpdateJobApplicationRequest request, Guid userId)
+    {
+        return new JobApplication
+        {
+            Id = request.Id,
+            JobTitle = request.JobTitle,
+            CompanyName = request.CompanyName,
+            ApplicationDate = request.ApplicationDate,
+            JobApplicationStatus = request.JobApplicationStatus,
+            JobPostingUrl = request.JobPostingUrl,
+            Notes = request.Notes,
+            UserId = userId
+        };
+    }
 
     public static RegisterUserResponse MapToResponse(this User user)
     {
