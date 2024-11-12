@@ -48,7 +48,7 @@ builder.Services.AddAuthentication(JwtBearerDefaults.AuthenticationScheme)
         };
     });
 
-var connectionString = builder.Configuration.GetConnectionString("AZURE_MYSQL_CONNECTIONSTRING");
+var connectionString = builder.Configuration.GetConnectionString("AWS_Connection");
 var mySqlServerVersion = new MySqlServerVersion(ServerVersion.AutoDetect(connectionString));
 
 builder.Services.AddDbContext<JobApplicationContext>(options =>
